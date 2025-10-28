@@ -686,22 +686,23 @@ function App(){
     )
   );
 
-  const notes = React.createElement("details",{className:"bg-white rounded-2xl shadow p-4 md:p-6"},
-    React.createElement("summary",{className:"cursor-pointer font-medium"},"Implementation notes & next steps"),
-    React.createElement("ul",{className:"list-disc pl-6 mt-3 space-y-1 text-sm text-slate-700"},
-      React.createElement("li",null,"Rounding applies after breaks, to nearest increment."),
-      React.createElement("li",null,"Daily OT allocation per employee per day."),
-      React.createElement("li",null,"Approving a week locks entries; locked entries can’t be edited/deleted."),
-      React.createElement("li",null,"Import projects CSV headers: code,name."),
-      React.createElement("li",null,"Login uses your backend /auth/login (temporary)."),
-      React.createElement("li",null,"Next: move data to Neon + real JWT auth; supervisor notifications.")
-    )
-  );
+const notesSection = React.createElement("details",{className:"bg-white rounded-2xl shadow p-4 md:p-6"},
+  React.createElement("summary",{className:"cursor-pointer font-medium"},"Implementation notes & next steps"),
+  React.createElement("ul",{className:"list-disc pl-6 mt-3 space-y-1 text-sm text-slate-700"},
+    React.createElement("li",null,"Rounding applies after breaks, to nearest increment."),
+    React.createElement("li",null,"Daily OT allocation per employee per day."),
+    React.createElement("li",null,"Approving a week locks entries; locked entries can’t be edited/deleted."),
+    React.createElement("li",null,"Import projects CSV headers: code,name."),
+    React.createElement("li",null,"Login uses your backend /auth/login (temporary)."),
+    React.createElement("li",null,"Next: move data to Neon + real JWT auth; supervisor notifications.")
+  )
+);
+
 
   // Main wrapper
-  const main = React.createElement("main",{className:"max-w-6xl mx-auto px-4 py-6 space-y-6"},
-    settings, kioskSection, logHours, summary, approvals, reporting, entriesTable, notes
-  );
+const main = React.createElement("main",{className:"max-w-6xl mx-auto px-4 py-6 space-y-6"},
+  settings, kioskSection, logHours, summary, approvals, reporting, entriesTable, notesSection
+);
 
   const footer = React.createElement("footer",{className:"max-w-6xl mx-auto px-4 py-8 text-center text-xs text-slate-500"},
     "Built as a starting point. Let's tailor it to your factory flow."
