@@ -87,6 +87,28 @@ function App(){
   const [apiBase, setApiBase] = useState("https://factory-labour-logger-backend.onrender.com");
   const [syncMsg, setSyncMsg] = useState("");
 
+  // Settings
+const [roundingMin, setRoundingMin] = useState(15);
+const [otDailyThreshold, setOtDailyThreshold] = useState(8);
+const [apiBase, setApiBase] = useState("https://factory-labour-logger-backend.onrender.com");
+const [syncMsg, setSyncMsg] = useState("");
+
+// --- Cloud API helpers ---
+async function apiGET(path){
+  const res = await fetch(apiBase.replace(/\/+$/,'') + path);
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+async function apiPOST(path, data){
+  const res = await fetch(apiBase.replace(/\/+$/,'') + path, {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json' },
+    body: JSON.stringify(data)
+  });
+  if(!res.ok) throw new Error(await res.text());
+}
+
   // Kiosk
   const [kiosk, setKiosk] = useState(false);
   const [kioskPin, setKioskPin] = useState("");
@@ -417,23 +439,54 @@ function App(){
     )
   );
 
-  // Settings & Cloud
-  const settings = React.createElement("section",{className:"bg-white rounded-2xl shadow p-4 md:p-6"},
-    React.createElement("h2",{className:"text-lg font-semibold mb-4"},"Policies, Cloud & Modes"),
-    React.createElement("div",{className:"grid md:grid-cols-8 gap-3 items-end"},
-      React.createElement("div",null, FieldLabel("Rounding (minutes)"),
-        React.createElement("input",{type:"number",min:1,className:"w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400",value:roundingMin,onChange:e=>setRoundingMin(Math.max(1,Number(e.target.value)))})),
-      React.createElement("div",null, FieldLabel("Daily OT threshold (hours)"),
-        React.createElement("input",{type:"number",min:0,step:"0.25",className:"w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400",value:otDailyThreshold,onChange:e=>setOtDailyThreshold(Math.max(0,Number(e.target.value)))})),
-      React.createElement("div",{className:"md:col-span-3"}, FieldLabel("API base URL"),
-        React.createElement("input",{type:"text",className:"w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400",value:apiBase,onChange:e=>setApiBase(e.target.value)})),
-      React.createElement("div",{className:"flex items-end gap-2"},
-        React.createElement("button",{onClick:syncNow,className:"px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50"},"Sync now"),
-        React.createElement("button",{onClick:()=>setKiosk(v=>!v),className:"px-3 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800"}, kiosk ? "Exit kiosk" : "Enter kiosk")
-      )
-    ),
-    syncMsg && React.createElement("div",{className:"text-xs text-slate-600 mt-2"}, syncMsg)
-  );
+// Settings & Cloud
+const settings = React.createElement("section",{className:"bg-white rounded-2xl shadow p-4 md:p-6"},
+  React.createElement("h2",{className:"text-lg font-semibold mb-4"},"Policies, Cloud & Modes"),
+  React.createElement("div",{className:"grid md:grid-cols-8 gap-3 items-end"},
+    React.createElement("div",null,
+      FieldLabel("Rounding (minutes)"),
+      React.createElement("input",{type:"number",min:1,className:"w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400",value:roundingMin,onChange:e=>setRoundingMin(Math.max(1,Number(e.target.value)))})),
+    React.createElement("div",null,
+      FieldLabel("Daily OT threshold (hours)"),
+      React.createElement("input",{type:"number",min:0,step:"0.25",className:"w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400",value:otDailyThreshold,onChange:e=>setOtDailyThreshold(Math.max(0,Number(e.target.value)))})),
+    React.createElement("div",{className:"md:col-span-3"},
+      FieldLabel("API base URL"),
+      React.createElement("input",{type:"text",className:"w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400",value:apiBase,onChange:e=>setApiBase(e.target.value)})),
+    React.createElement("div",{className:"flex items-end gap-2 flex-wrap"},
+      // Existing buttons
+      React.createElement("button",{onClick:syncNow,className:"px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50"},"Sync now"),
+      React.createElement("button",{onClick:()=>setKiosk(v=>!v),className:"px-3 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800"}, kiosk ? "Exit kiosk" : "Enter kiosk"),
+
+      // NEW: Save to cloud
+      React.createElement("button",{
+        className:"px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50",
+        onClick: async ()=>{
+          try{
+            await apiPOST('/entries/', entries);
+            setSyncMsg('Saved to cloud ✔');
+          }catch(e){
+            setSyncMsg('Save failed: ' + e.message);
+          }
+        }
+      },"Save to cloud"),
+
+      // NEW: Load from cloud
+      React.createElement("button",{
+        className:"px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50",
+        onClick: async ()=>{
+          try{
+            const data = await apiGET('/entries/');
+            setEntries(Array.isArray(data) ? data : []);
+            setSyncMsg('Loaded from cloud ✔');
+          }catch(e){
+            setSyncMsg('Load failed: ' + e.message);
+          }
+        }
+      },"Load from cloud")
+    )
+  ),
+  syncMsg && React.createElement("div",{className:"text-xs text-slate-600 mt-2"}, syncMsg)
+);
 
   // Kiosk
   const kioskSection = !kiosk ? null : React.createElement("section",{className:"bg-white rounded-2xl shadow p-4 md:p-6"},
