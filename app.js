@@ -87,12 +87,6 @@ function App(){
   const [apiBase, setApiBase] = useState("https://factory-labour-logger-backend.onrender.com");
   const [syncMsg, setSyncMsg] = useState("");
 
-  // Settings
-const [roundingMin, setRoundingMin] = useState(15);
-const [otDailyThreshold, setOtDailyThreshold] = useState(8);
-const [apiBase, setApiBase] = useState("https://factory-labour-logger-backend.onrender.com");
-const [syncMsg, setSyncMsg] = useState("");
-
 // --- Cloud API helpers ---
 async function apiGET(path){
   const res = await fetch(apiBase.replace(/\/+$/,'') + path);
