@@ -103,6 +103,47 @@ async function apiPOST(path, data){
   if(!res.ok) throw new Error(await res.text());
 }
 
+// --- Map frontend <-> backend shapes ---
+function toServerEntry(e){
+  return {
+    id: e.id,
+    employee_id: e.employeeId,
+    project_id: e.projectId,
+    date: e.date,
+    start: e.start,
+    end: e.end,
+    break_min: Number(e.breakMin ?? 0),
+    work_type: e.workType ?? "",
+    notes: e.notes ?? "",
+    hours: Number(e.hours ?? 0),
+    rounded_from_min: Number(e.roundedFromMin ?? Math.round((Number(e.hours || 0) * 60))),
+    rounding_min: Number(e.roundingMin ?? 15),
+    status: e.status ?? "pending",
+    locked: !!e.locked,
+    created_at: e.createdAt ?? new Date().toISOString(),
+  };
+}
+
+function fromServerEntry(e){
+  return {
+    id: e.id,
+    employeeId: e.employee_id,
+    projectId: e.project_id,
+    date: e.date,
+    start: e.start,
+    end: e.end,
+    breakMin: e.break_min,
+    workType: e.work_type,
+    notes: e.notes,
+    hours: e.hours,
+    roundedFromMin: e.rounded_from_min,
+    roundingMin: e.rounding_min,
+    status: e.status,
+    locked: e.locked,
+    createdAt: e.created_at,
+  };
+}
+  
   // Kiosk
   const [kiosk, setKiosk] = useState(false);
   const [kioskPin, setKioskPin] = useState("");
@@ -456,7 +497,8 @@ const settings = React.createElement("section",{className:"bg-white rounded-2xl 
         className:"px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50",
         onClick: async ()=>{
           try{
-            await apiPOST('/entries/', entries);
+            const payload = entries.map(toServerEntry);
+            await apiPOST('/entries/', payload);
             setSyncMsg('Saved to cloud ✔');
           }catch(e){
             setSyncMsg('Save failed: ' + e.message);
@@ -470,7 +512,8 @@ const settings = React.createElement("section",{className:"bg-white rounded-2xl 
         onClick: async ()=>{
           try{
             const data = await apiGET('/entries/');
-            setEntries(Array.isArray(data) ? data : []);
+            const mapped = Array.isArray(data) ? data.map(fromServerEntry) : [];
+            setEntries(mapped);
             setSyncMsg('Loaded from cloud ✔');
           }catch(e){
             setSyncMsg('Load failed: ' + e.message);
