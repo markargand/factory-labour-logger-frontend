@@ -571,13 +571,23 @@ const settings = React.createElement("section",{className:"bg-white rounded-2xl 
       React.createElement("div",null,
         FieldLabel("Employee PIN / Badge / Name"),
         React.createElement("input",{className:"w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400 text-2xl",value:kioskPin,onChange:e=>setKioskPin(e.target.value),placeholder:"Scan badge or type"}),
-        React.createElement("button",{className:"mt-2 px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50",onClick:()=>{
-          const v=kioskPin.trim().toLowerCase();
-          const emp=employees.find(e=>
-            e.name.toLowerCase()===v || e.id.toLowerCase()===v || (e.badge||"").toLowerCase()===v || (e.pin||"").toLowerCase()===v
-          );
-          if(emp) setKioskEmployeeId(emp.id); else alert("No matching employee");
-        }},"Select employee"),
+        React.createElement("button",{className:"mt-2 px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50",
+        onClick:()=>{
+    const code = kioskPin.trim().toLowerCase();
+    const emp = employees.find(e=>{
+      const name  = (e.name  || "").toLowerCase();
+      const id    = (e.id    || "").toLowerCase();
+      const badge = (e.badge || "").toLowerCase();
+      const pin   = (e.pin   || "").toLowerCase();
+      return code === name || code === id || code === badge || code === pin;
+    });
+    if (emp) {
+      setKioskEmployeeId(emp.id);
+    } else {
+      alert("No matching employee");
+    }
+  }
+},"Select employee"),
         kioskEmployeeId && React.createElement("div",{className:"text-sm text-slate-600 mt-1"},
           "Selected: ", React.createElement("span",{className:"font-semibold"}, employeeById[kioskEmployeeId]?.name))
       ),
