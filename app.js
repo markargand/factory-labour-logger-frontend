@@ -80,6 +80,15 @@ function App(){
   const [employees, setEmployees] = useState(defaultEmployees);
   const [projects, setProjects] = useState(defaultProjects);
   const [entries, setEntries] = useState([]);
+  
+  // --- Supervisor stats (global) ---
+  const pendingEntries = entries.filter(e => e.status === "pending");
+  const approvedEntries = entries.filter(e => e.status === "approved");
+  const rejectedEntries = entries.filter(e => e.status === "rejected");
+
+  const pendingHours = pendingEntries.reduce((sum, e) => sum + (e.hours || 0), 0);
+  const approvedHours = approvedEntries.reduce((sum, e) => sum + (e.hours || 0), 0);
+  const rejectedHours = rejectedEntries.reduce((sum, e) => sum + (e.hours || 0), 0);
 
   // Settings
   const [roundingMin, setRoundingMin] = useState(15);
@@ -682,17 +691,36 @@ const settings = React.createElement("section",{className:"bg-white rounded-2xl 
   );
 
   // Approvals
-  const approvals = React.createElement("section",{className:"bg-white rounded-2xl shadow p-4 md:p-6"},
-    React.createElement("div",{className:"flex items-center justify-between mb-3"},
-      React.createElement("h2",{className:"text-lg font-semibold"},"Supervisor — Weekly approvals"),
-      React.createElement("div",{className:"flex items-center gap-2"},
-        React.createElement("input",{type:"week",className:"rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400",value:weekIso,onChange:e=>setWeekIso(e.target.value)}),
-        React.createElement("button",{onClick:approveWeek,className:"px-3 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800"},"Approve week"),
-        React.createElement("button",{onClick:rejectWeek,className:"px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50"},"Reject week")
-      )
+const approvals = React.createElement("section",{className:"bg-white rounded-2xl shadow p-4 md:p-6"},
+  React.createElement("div",{className:"flex items-center justify-between mb-3"},
+    React.createElement("h2",{className:"text-lg font-semibold"},"Supervisor — Weekly approvals"),
+    React.createElement("div",{className:"flex items-center gap-2"},
+      React.createElement("input",{type:"week",className:"rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400",value:weekIso,onChange:e=>setWeekIso(e.target.value)}),
+      React.createElement("button",{onClick:approveWeek,className:"px-3 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800"},"Approve week"),
+      React.createElement("button",{onClick:rejectWeek,className:"px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50"},"Reject week")
+    )
+  ),
+  React.createElement("p",{className:"text-sm text-slate-600 mb-3"},"Approving a week locks its entries. Locked entries cannot be edited or deleted."),
+
+  // --- NEW: supervisor dashboard cards ---
+  React.createElement("div",{className:"grid md:grid-cols-3 gap-3 mt-2"},
+    React.createElement("div",{className:"rounded-xl border border-slate-200 p-3"},
+      React.createElement("div",{className:"text-xs uppercase tracking-wide text-slate-500"},"Pending"),
+      React.createElement("div",{className:"text-2xl font-semibold mt-1"}, pendingHours.toFixed(2) + " h"),
+      React.createElement("div",{className:"text-xs text-slate-500 mt-1"}, pendingEntries.length + " entries")
     ),
-    React.createElement("p",{className:"text-sm text-slate-600"},"Approving a week locks its entries. Locked entries cannot be edited or deleted.")
-  );
+    React.createElement("div",{className:"rounded-xl border border-slate-200 p-3"},
+      React.createElement("div",{className:"text-xs uppercase tracking-wide text-slate-500"},"Approved"),
+      React.createElement("div",{className:"text-2xl font-semibold mt-1"}, approvedHours.toFixed(2) + " h"),
+      React.createElement("div",{className:"text-xs text-slate-500 mt-1"}, approvedEntries.length + " entries")
+    ),
+    React.createElement("div",{className:"rounded-xl border border-slate-200 p-3"},
+      React.createElement("div",{className:"text-xs uppercase tracking-wide text-slate-500"},"Rejected"),
+      React.createElement("div",{className:"text-2xl font-semibold mt-1"}, rejectedHours.toFixed(2) + " h"),
+      React.createElement("div",{className:"text-xs text-slate-500 mt-1"}, rejectedEntries.length + " entries")
+    )
+  )
+);
 
   // Reporting (simple tables)
   const reporting = React.createElement("section",{className:"bg-white rounded-2xl shadow p-4 md:p-6"},
