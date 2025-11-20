@@ -786,10 +786,43 @@ const employeesAdmin = React.createElement("section",{className:"bg-white rounde
 
   // Reporting (simple tables)
   const reporting = React.createElement("section",{className:"bg-white rounded-2xl shadow p-4 md:p-6"},
-    React.createElement("div",{className:"flex items-center justify-between mb-3"},
-      React.createElement("h2",{className:"text-lg font-semibold"},"Reporting dashboard"),
-      React.createElement("input",{type:"week",className:"rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400",value:reportWeek,onChange:e=>setReportWeek(e.target.value)})
-    ),
+    React.createElement("div",{className:"flex items-center justify-between mb-3 flex-wrap gap-2"},
+    React.createElement("h2",{className:"text-lg font-semibold"},"Reporting dashboard"),
+    React.createElement("div",{className:"flex items-center gap-2 flex-wrap"},
+      React.createElement("input",{
+        type:"week",
+        className:"rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400",
+        value:reportWeek,
+        onChange:e=>setReportWeek(e.target.value)
+      }),
+      // Download XLSX
+      React.createElement("button",{
+        className:"px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-sm",
+        onClick: ()=>{
+          if(!apiBase){
+            setSyncMsg("Set API base URL before exporting.");
+            return;
+          }
+          const base = apiBase.replace(/\/+$/,'');
+          const url = base + "/export/xlsx" + (reportWeek ? ("?week=" + encodeURIComponent(reportWeek)) : "");
+          window.open(url, "_blank");
+        }
+      },"Download XLSX"),
+      // Download PDF
+      React.createElement("button",{
+        className:"px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-sm",
+        onClick: ()=>{
+          if(!apiBase){
+            setSyncMsg("Set API base URL before exporting.");
+            return;
+          }
+          const base = apiBase.replace(/\/+$/,'');
+          const url = base + "/export/pdf" + (reportWeek ? ("?week=" + encodeURIComponent(reportWeek)) : "");
+          window.open(url, "_blank");
+        }
+      },"Download PDF")
+    )
+  ),
     React.createElement("div",{className:"grid md:grid-cols-2 gap-4"},
       React.createElement("div",{className:"rounded-xl border border-slate-200 p-3"},
         React.createElement("h3",{className:"font-medium mb-2"},"By employee (week ", reportWeek, ")"),
