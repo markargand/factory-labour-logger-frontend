@@ -732,6 +732,58 @@ const approvals = React.createElement("section",{className:"bg-white rounded-2xl
   )
 );
 
+// Employees admin: edit badge & PIN
+const employeesAdmin = React.createElement("section",{className:"bg-white rounded-2xl shadow p-4 md:p-6"},
+  React.createElement("h2",{className:"text-lg font-semibold mb-4"},"Employees \u2014 badges & PINs"),
+  React.createElement("p",{className:"text-sm text-slate-600 mb-3"},
+    "Edit badges and PINs used for kiosk login. After changes, click \u2018Save master data\u2019 in the cloud section above to push them to the database."
+  ),
+  React.createElement("div",{className:"overflow-x-auto"},
+    React.createElement("table",{className:"min-w-full text-sm"},
+      React.createElement("thead",null,
+        React.createElement("tr",{className:"text-left text-slate-600 border-b"},
+          React.createElement("th",{className:"py-2 pr-3"},"Name"),
+          React.createElement("th",{className:"py-2 pr-3"},"Badge code"),
+          React.createElement("th",{className:"py-2 pr-3"},"PIN")
+        )
+      ),
+      React.createElement("tbody",null,
+        employees.length === 0
+          ? React.createElement("tr",null,
+              React.createElement("td",{colSpan:3,className:"py-3 text-slate-500"},"No employees yet.")
+            )
+          : employees.map(e =>
+              React.createElement("tr",{key:e.id,className:"border-b last:border-b-0"},
+                React.createElement("td",{className:"py-2 pr-3 whitespace-nowrap"}, e.name),
+                React.createElement("td",{className:"py-2 pr-3"},
+                  React.createElement("input",{
+                    type:"text",
+                    className:"w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400",
+                    value: e.badge || "",
+                    onChange: ev => {
+                      const v = ev.target.value;
+                      setEmployees(prev => prev.map(x => x.id === e.id ? { ...x, badge: v } : x));
+                    }
+                  })
+                ),
+                React.createElement("td",{className:"py-2 pr-0"},
+                  React.createElement("input",{
+                    type:"text",
+                    className:"w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400",
+                    value: e.pin || "",
+                    onChange: ev => {
+                      const v = ev.target.value;
+                      setEmployees(prev => prev.map(x => x.id === e.id ? { ...x, pin: v } : x));
+                    }
+                  })
+                )
+              )
+            )
+      )
+    )
+  )
+);
+
   // Reporting (simple tables)
   const reporting = React.createElement("section",{className:"bg-white rounded-2xl shadow p-4 md:p-6"},
     React.createElement("div",{className:"flex items-center justify-between mb-3"},
@@ -859,7 +911,7 @@ const notesSection = React.createElement("details",{className:"bg-white rounded-
 
   // Main wrapper
 const main = React.createElement("main",{className:"max-w-6xl mx-auto px-4 py-6 space-y-6"},
-  settings, kioskSection, logHours, summary, approvals, reporting, entriesTable, notesSection
+  settings, kioskSection, logHours, summary, approvals, reporting, employeesAdmin, entriesTable, notesSection
 );
 
   const footer = React.createElement("footer",{className:"max-w-6xl mx-auto px-4 py-8 text-center text-xs text-slate-500"},
