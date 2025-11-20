@@ -569,7 +569,7 @@ const settings = React.createElement("section",{className:"bg-white rounded-2xl 
     React.createElement("h2",{className:"text-lg font-semibold mb-4"},"Kiosk Mode"),
     React.createElement("div",{className:"grid md:grid-cols-3 gap-3 items-end"},
       React.createElement("div",null,
-        FieldLabel("Employee PIN / Badge / Name"),
+        FieldLabel("Badge / PIN / Name / QR"),
         React.createElement("input",{className:"w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-slate-400 text-2xl",value:kioskPin,onChange:e=>setKioskPin(e.target.value),placeholder:"Scan badge or type"}),
         React.createElement("button",{className:"mt-2 px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50",
         onClick:()=>{
