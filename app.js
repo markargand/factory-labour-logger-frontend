@@ -519,7 +519,37 @@ const settings = React.createElement("section",{className:"bg-white rounded-2xl 
             setSyncMsg('Load failed: ' + e.message);
           }
         }
-      },"Load from cloud")
+      },"Load from cloud"),
+                        
+     // NEW: Save master data (employees & projects)
+      React.createElement("button",{
+        className:"px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50",
+        onClick: async ()=>{
+          try{
+            await apiPOST('/employees/', employees);
+            await apiPOST('/projects/', projects);
+            setSyncMsg('Master data saved ✔');
+          }catch(e){
+            setSyncMsg('Master save failed: ' + e.message);
+          }
+        }
+      },"Save master data"),
+    
+      // NEW: Load master data
+      React.createElement("button",{
+        className:"px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50",
+        onClick: async ()=>{
+          try{
+            const emps = await apiGET('/employees/');
+            const projs = await apiGET('/projects/');
+            setEmployees(Array.isArray(emps) ? emps : []);
+            setProjects(Array.isArray(projs) ? projs : []);
+            setSyncMsg('Master data loaded ✔');
+          }catch(e){
+            setSyncMsg('Master load failed: ' + e.message);
+          }
+        }
+      },"Load master data")      
     )
   ),
   syncMsg && React.createElement("div",{className:"text-xs text-slate-600 mt-2"}, syncMsg)
